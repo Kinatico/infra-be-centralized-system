@@ -11,6 +11,7 @@ exceptiongroup="*"
 
 [dev-packages]
 aws-cdk-lib = "==2.165.0"
+exceptiongroup="*"
 
 [requires]
 python_version = "3.12"
