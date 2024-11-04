@@ -1,0 +1,36 @@
+name: infra-be-centralized-system
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        archive_name: [ [build_lib,"dev-libs"], [runtime_lib, ""]]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v3
+      - name: Download python from action
+        uses: ./.github/actions/download-python
+      - name: Zipping package libraries
+        uses: ./.github/actions/package-lib
+        with:
+          dev_lib_dir: ${{ matrix.archive_name[1] }}
+          archive_name: ${{ matrix.archive_name[0] }}
+      - name: List files for debugging
+        run: ls -alh
+
+

@@ -1,0 +1,20 @@
+name: Download Python
+
+inputs:
+  python_version:
+    description: "Download python"
+    require: false
+    default: '3.12'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Restore cache python
+      uses: actions/cache@v3
+      with:
+        path: ${{ runner.tool_cache }}
+        key: ${{ runner.os }}-tool-cache
+    - name: Download Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python_version }}

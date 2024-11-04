@@ -1,0 +1,47 @@
+name: Package libraries
+
+inputs:
+  src_dir:
+    description: Directory contain python source code need to be packaged.
+    required: false
+    default: src
+  dev_lib_dir:
+    description: Directory contain where pipfile located. If we want package only libraries for developing application.
+    required: false
+  temp_dir:
+    description: Temporary directory where source will be gathered before package to zip file.
+    required: false
+    default: temp
+  archive_name:
+    description: Achieve directory where all source will be gathered before package to zip file.
+    required: false
+    default: output
+
+
+runs:
+  using: composite
+  steps:
+    - name: package
+      run: |
+        pip install pipenv
+        pipenv lock
+        mkdir ${{ inputs.temp_dir }}
+        echo "Checking whether developer want to package only development or all libraries"
+        if [ -n "${{ inputs.dev_lib_dir }}" ]; then
+          echo "Packaging dev libraries"
+          pipenv requirements --dev-only 2>&1 | tee requirements.txt
+        else
+          echo "Packaging runtime libraries"
+          pipenv requirements 2>&1 | tee requirements.txt
+        fi
+        pip install -r requirements.txt --no-deps -t ${{ inputs.temp_dir }}
+        echo "Copy your source to temp directory"
+        cp -r ${{ inputs.src_dir }} ${{ inputs.temp_dir }}
+        echo "Zipping temp directory and go back the parent position directory"
+        cd ${{ inputs.temp_dir }} && zip -qqr ../${{ inputs.archive_name }} . && cd ..
+      shell: bash
+    - name: Upload zip to artifactory
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.archive_name }}
+        path: ${{ inputs.archive_name }}.zip

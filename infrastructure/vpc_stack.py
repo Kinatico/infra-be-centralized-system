@@ -1,19 +1,13 @@
 from aws_cdk import (
-    # Duration,
     Stack,
-    # aws_sqs as sqs,
+    aws_s3 as s3,
 )
 from constructs import Construct
 
-class InfraBeCentralizedSystemStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+class VPCStack(Stack):
+
+    def __init__(self, scope: Construct, construct_id: str, pr_number: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # The code that defines your stack goes here
-
-        # example resource
-        # queue = sqs.Queue(
-        #     self, "InfraBeCentralizedSystemQueue",
-        #     visibility_timeout=Duration.seconds(300),
-        # )
+        s3.Bucket(self, "Bucket", bucket_name=f"bucket{pr_number}", versioned=True)
