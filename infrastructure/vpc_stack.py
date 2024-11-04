@@ -10,4 +10,4 @@ class VPCStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, pr_number: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        s3.Bucket(self, "Bucket", bucket_name=f"bucket{pr_number}", versioned=True)
+        s3.Bucket(self, "Bucketjoe143", bucket_name=f"bucketjoe143-{pr_number}", versioned=True)
