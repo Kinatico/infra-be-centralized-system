@@ -58,6 +58,6 @@ jobs:
           name: runtime_lib
       - name: Destroy resources by cdk
         run: |
-          sudo npm install -g aws-cdk@2.139.0
+          sudo npm install -g aws-cdk@2.165.0
           PYTHONPATH=build_lib.zip cdk destroy --all -c src={PWD} --force
         shell: bash
