@@ -4,7 +4,8 @@ from aws_cdk import (
     aws_ecs as ecs,
     Stack,
     aws_iam as iam,
-    aws_logs as logs
+    aws_logs as logs,
+    aws_elasticloadbalancingv2 as elbv2, Duration, CfnOutput
 )
 from constructs import Construct
 
@@ -88,3 +89,26 @@ class TaskStoreServiceStack(Stack):
             security_groups=[security_group_ecs_service],
             vpc_subnets={"subnet_type": ec2.SubnetType.PRIVATE_ISOLATED}
         )
+
+        # Tạo Application Load Balancer
+        load_balancer = elbv2.ApplicationLoadBalancer(
+            self, "biwoco-alb",
+            vpc=vpc,
+            internet_facing=False,
+        )
+
+        # Tạo Listener cho ALB
+        listener = load_balancer.add_listener("Listener", port=80)
+
+        # Thêm ECS Service vào Listener
+        listener.add_targets("ECS", port=80, targets=[service],
+                             health_check=elbv2.HealthCheck(
+                                 path="/health",
+                                 interval=Duration.seconds(30),
+                                 timeout=Duration.seconds(5),
+                                 healthy_threshold_count=2,
+                                 unhealthy_threshold_count=2
+                             ))
+
+        # Output Load Balancer DNS
+        CfnOutput(self, "task-store-load-balancer-dns", value=load_balancer.load_balancer_dns_name, description="The DNS of the load balancer")
