@@ -12,7 +12,7 @@ with open("cdk.json") as f:
 
 app = cdk.App()
 pr_number = os.getenv('PR_NUMBER') if os.getenv('PR_NUMBER') else ""
-environment = cdk_config.get("environments", {}).get("staging")
+environment = cdk_config.get("context", {}).get("environments", {}).get("staging")
 account = environment.get("account")
 region = environment.get("region")
 env = cdk.Environment(account=account, region=region)
