@@ -1,0 +1,63 @@
+name: Destroy
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        archive_name: [ [ build_lib,"dev-libs" ], [ runtime_lib, "" ] ]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v3
+      - name: Download python from action
+        uses: ./.github/actions/download-python
+      - name: Zipping package libraries
+        uses: ./.github/actions/package-lib
+        with:
+          dev_lib_dir: ${{ matrix.archive_name[1] }}
+          archive_name: ${{ matrix.archive_name[0] }}
+
+  destroy:
+    needs: setup
+    name: Destroy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Node to setup cdk
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+      - name: Download build_lib artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build_lib
+      - name: Download runtime_lib artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: runtime_lib
+      - name: Destroy resources by cdk
+        run: |
+          sudo npm install -g aws-cdk@2.139.0
+          PYTHONPATH=build_lib.zip cdk destroy --all -c src={PWD} --force
+        shell: bash
