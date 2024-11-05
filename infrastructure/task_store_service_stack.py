@@ -90,17 +90,17 @@ class TaskStoreServiceStack(Stack):
             vpc_subnets={"subnet_type": ec2.SubnetType.PRIVATE_ISOLATED}
         )
 
-        # Tạo Application Load Balancer
+        # Create Application Load Balancer
         load_balancer = elbv2.ApplicationLoadBalancer(
-            self, "biwoco-alb",
+            self, "task-store-alb",
             vpc=vpc,
             internet_facing=False,
         )
 
-        # Tạo Listener cho ALB
+        # Create Listener for ALB
         listener = load_balancer.add_listener("Listener", port=80)
 
-        # Thêm ECS Service vào Listener
+        # Add ECS Service to Listener
         listener.add_targets("ECS", port=80, targets=[service],
                              health_check=elbv2.HealthCheck(
                                  path="/health",
