@@ -92,7 +92,7 @@ class TaskStoreServiceStack(Stack):
 
         # Tạo Application Load Balancer
         load_balancer = elbv2.ApplicationLoadBalancer(
-            self, "biwoco-alb",
+            self, "task-store-alb",
             vpc=vpc,
             internet_facing=False,
         )
