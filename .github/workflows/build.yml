@@ -66,7 +66,7 @@ jobs:
         shell: bash
       - name: Login to Amazon ECR
         run: |
-          docker login -u AWS -p $(aws ecr get-login-password --region ${{ env.REGION }}) ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.REGION }}.amazonaws.com
+          docker login -u AWS -p $(aws ecr get-login-password --region ${{ env.AWS_REGION }}) ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
       - name: Deploy to ECR
         run: |
           docker build -t infra-be-centralized-system --build-arg ACCOUNT_ID="${{ env.ACCOUNT_ID }}" -f ./Dockerfile .
