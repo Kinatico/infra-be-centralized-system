@@ -13,7 +13,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
   AWS_REGION: ap-southeast-2
-  ACCOUNT_ID: 593793043413
+  ACCOUNT_ID: 445567096757
 
 
 jobs:
@@ -59,16 +59,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: runtime_lib
-      - name: Login to Amazon ECR
-        run: |
-          docker login -u AWS -p $(aws ecr get-login-password --region ${{ env.AWS_REGION }}) ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-      - name: Deploy to ECR
-        run: |
-          docker build -t infra-be-centralized-system --build-arg ACCOUNT_ID="${{ env.ACCOUNT_ID }}" -f ./Dockerfile .
-          docker tag infra-be-centralized-system:latest ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/infra-be-centralized-system:${{ github.sha }}
-          docker push ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/infra-be-centralized-system:${{ github.sha }}
-          docker tag infra-be-centralized-system:latest ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/infra-be-centralized-system:latest
-          docker push ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/infra-be-centralized-system:latest
       - name: Deploy resources to AWS by CDK
         run: |
           sudo npm install -g aws-cdk@2.165.0
