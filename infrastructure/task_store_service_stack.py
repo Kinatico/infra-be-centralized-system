@@ -56,7 +56,7 @@ class TaskStoreServiceStack(Stack):
         ecs_cluster = ecs.Cluster(self, "task-store-cluster", vpc=vpc)
 
         # Get the ECR repository by its name
-        repository = ecr.Repository.from_repository_name(self, "infra-be-centralized-system-repository", "infra-be-centralized-system")
+        repository = ecr.Repository.from_repository_name(self, "marvelx-be-compliance-api-repository", "marvelx-be-compliance-api")
 
         # Add an IAM Role for the ECS Task
         task_role = iam.Role(self, "ecs-task-store-execution-role",
