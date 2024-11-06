@@ -13,7 +13,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
   AWS_REGION: ap-southeast-2
-  ACCOUNT_ID: 593793043413
+  ACCOUNT_ID: 445567096757
 
 
 jobs:
